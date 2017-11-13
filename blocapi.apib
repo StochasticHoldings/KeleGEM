@@ -1,0 +1,345 @@
+FORMAT: 1A
+HOST: https://www.bloc.io/api/v1/
+
+# Bloc API
+
+The Bloc API allows students to access the Bloc Application via a restful API.
+
+## Sessions [/sessions]
+
+### Retreive Auth Token [POST]
+
++ Attributes
+    + email (string, required) - The user's email
+    + password (string, required) - The user's password
+
++ Request (application/json)
+
+        {
+            "email":"antblessing@gmail.com",
+            "password":"password"
+        }
+
++ Response 200 (application/json)
+
+        {
+            "auth_token":"eyJ0eXAiOiJKV1QiLCJhhGciOiJIUzI1NiJ9.eyJhcGlfa2V5IjoiYTc2MDZkNTBhYjA3NDE4ZWE4ZmU5NzliY2YxNTM1ZjAiLCJ1c2VyX2lkIjoyMzAzMTExLCJuYW1lIjoiQmVuIE5lZWx5In0.3VXD-FxOoxaGXHu6vmL8g191bl5F_oKe9qj8Khmp9F0",
+            "user":
+                {
+                    "id":2307245,
+                    "email:"antblessing@gmail.com",
+                    "created_at":"2015-08-11T16:31:08.836-07:00",
+                    "updated_at":"2015-11-04T13:13:32.457-08:00",
+                    "facebook_id":null,
+                    ...,
+                    "gender":null
+                }
+        }
+
+## Credentials [/users/me]
+
+### Current User [GET]
+Retreive current user
+
++ Request (application/json)
+
+    + Headers
+
+            authorization: eyJ0eXAiOiJKV1QiLCJhhGciOiJIUzI1NiJ9.eyJhcGlfa2V5IjoiYTc2MDZkNTBhYjA3NDE4ZWE4ZmU5NzliY2YxNTM1ZjAiLCJ1c2VyX2lkIjoyMzAzMTExLCJuYW1lIjoiQmVuIE5lZWx5In0.3VXD-FxOoxaGXHu6vmL8g191bl5F_oKe9qj8Khmp9F0
+
++ Response 200 (application/json)
+    + Body
+
+            {
+                "id":2307245,
+                "email:"antblessing@gmail.com",
+                "created_at":"2015-08-11T16:31:08.836-07:00",
+                "updated_at":"2015-11-04T13:13:32.457-08:00",
+                "facebook_id":null,
+                ...,
+                "gender":null
+            }
+
+## Mentors [/mentors]
+
+### Student Availability [GET /mentors/{id}/student_availability]
+List mentor's available timeslots for the current user
++ Attributes
+    + id (number, required) - The mentor's id
+
++ Request (application/json)
+
+    + Headers
+
+            authorization: eyJ0eXAiOiJKV1QiLCJhhGciOiJIUzI1NiJ9.eyJhcGlfa2V5IjoiYTc2MDZkNTBhYjA3NDE4ZWE4ZmU5NzliY2YxNTM1ZjAiLCJ1c2VyX2lkIjoyMzAzMTExLCJuYW1lIjoiQmVuIE5lZWx5In0.3VXD-FxOoxaGXHu6vmL8g191bl5F_oKe9qj8Khmp9F0
+
++ Response 200 (application/json)
+
+        [
+            {
+                "id":13918,
+                "starts_at":"2016-02-21T05:00:00.000Z",
+                "ends_at":"2016-02-21T05:29:59.000Z",
+                "week_day":7,
+                "booked":null
+            },
+            {
+                "id":13919,
+                "starts_at":"2016-02-21T05:30:00.000Z",
+                "ends_at":"2016-02-21T05:59:59.000Z",
+                "week_day":7,
+                "booked":null
+            },
+            ....
+        ]
+
+## Message Threads [/message_threads]
+
+### All Messages [GET]
+Show message threads for current user, paginated
+
++ Attributes
+    + page (number) - The message thread page
+
++ Request (application/json)
+
+    + Body
+
+            {
+                "page":11,
+            }
+
+    + Headers
+
+            authorization: eyJ0eXAiOiJKV1QiLCJhhGciOiJIUzI1NiJ9.eyJhcGlfa2V5IjoiYTc2MDZkNTBhYjA3NDE4ZWE4ZmU5NzliY2YxNTM1ZjAiLCJ1c2VyX2lkIjoyMzAzMTExLCJuYW1lIjoiQmVuIE5lZWx5In0.3VXD-FxOoxaGXHu6vmL8g191bl5F_oKe9qj8Khmp9F0
+
+
++ Response 200 (application/json)
+
+            {
+              "data":{
+                "items":[
+                  {
+                    "id":1,
+                    "subject":"Hey there",
+                    "messages_count":10,
+                    "updated_at":"2015-09-26T19:30:49.772-04:00",
+                    "user_image":"https://cdn.bloc.io/path/to/image",
+                    "preview":"Hey there, I was confused about this...",
+                    "first_name":"Mike",
+                    "last_name":"Jewett",
+                    "unread":true
+                  },
+                  // ...
+                ],
+                "count":100
+              }
+            }
+
+## Messages [/messages]
+
+### Create Message [POST]
+Create a new message on an existing conversation thread, or a new conversation thread with a message. Requests without a message thread token will create a new thead with message.
+
++ Attributes
+    + sender (string, required) - The sender's email
+    + recipient_id (number, required) - The recipient's id
+    + token (string) - The message thread token
+    + subject (string) - The message subject
+    + `stripped-text` (string, required) - The message body
+
++ Request (application/json)
+
+    + Headers
+
+            authorization: eyJ0eXAiOiJKV1QiLCJhhGciOiJIUzI1NiJ9.eyJhcGlfa2V5IjoiYTc2MDZkNTBhYjA3NDE4ZWE4ZmU5NzliY2YxNTM1ZjAiLCJ1c2VyX2lkIjoyMzAzMTExLCJuYW1lIjoiQmVuIE5lZWx5In0.3VXD-FxOoxaGXHu6vmL8g191bl5F_oKe9qj8Khmp9F0
+
+    + Body
+
+            {
+                "sender":"strong.bad@strongbadia.gov",
+                "recipient_id":2,
+                "token": "abcd",
+                "subject":"Royale with cheese",
+                "stripped-text":"That's what they call a quarter pounder in France."
+            }
+
++ Response 200 (application/json)
+
+        {
+          success: true
+        }
+
+## Roadmaps [/roadmaps/{id}]
+
+### Show Roadmap [GET]
+Show a roadmap and associated sections and checkpoints.
+
++ Attributes
+    + id (number) - ID of the roadmap in the form of an integer
+
++ Request (application/json)
+
+    + Headers
+
+            authorization: eyJ0eXAiOiJKV1QiLCJhhGciOiJIUzI1NiJ9.eyJhcGlfa2V5IjoiYTc2MDZkNTBhYjA3NDE4ZWE4ZmU5NzliY2YxNTM1ZjAiLCJ1c2VyX2lkIjoyMzAzMTExLCJuYW1lIjoiQmVuIE5lZWx5In0.3VXD-FxOoxaGXHu6vmL8g191bl5F_oKe9qj8Khmp9F0
+
++ Response 200 (application/json)
+
+        [
+            {
+                "id":13918,
+                "starts_at":"2016-02-21T05:00:00.000Z",
+                "ends_at":"2016-02-21T05:29:59.000Z",
+                "week_day":7,
+                "booked":null
+            },
+            {
+                "id":13919,
+                "starts_at":"2016-02-21T05:30:00.000Z",
+                "ends_at":"2016-02-21T05:59:59.000Z",
+                "week_day":7,
+                "booked":null
+            },
+            ....
+        ]
+
+
+## Checkpoints [/checkpoints/{id}]
+
+### Show Checkpoint [GET]
+
++ Request (application/json)
+
+    + Headers
+
+            authorization: eyJ0eXAiOiJKV1QiLCJhhGciOiJIUzI1NiJ9.eyJhcGlfa2V5IjoiYTc2MDZkNTBhYjA3NDE4ZWE4ZmU5NzliY2YxNTM1ZjAiLCJ1c2VyX2lkIjoyMzAzMTExLCJuYW1lIjoiQmVuIE5lZWx5In0.3VXD-FxOoxaGXHu6vmL8g191bl5F_oKe9qj8Khmp9F0
++ Parameters
+    + id (number) - ID of the checkpoint in the form of an integer
+
++ Response 200 (application/json)
+
+            {
+              "id":8,
+              "name":"Web Development - Rails 4",
+              "slug":"web-development-rails-4",
+              level:"full"
+              "sections":[
+                {
+                  "id":5,
+                  "roadmap_id":8,
+                  "name":Foundation",
+                  "time_estimate":160 Hours",
+                  "point_ratio":0.3333333333333333,
+                  "description":Learn the fundamentals of...",
+                  "icon":null,
+                  "projects":2,
+                  "checkpoints":[
+                    {
+                      "id":279,
+                      "name":"Introduction",
+                      "summary":"In the...",
+                      "body":"### Welcome to Bloc!\r\n\r\n..."
+                    },
+                    {
+                      ...
+                    }
+                  ]
+                },
+                {
+                  ...
+                }
+              ]
+            }
+
+
+## Checkpoint Submissions [/checkpoint_submissions]
+
+### Create [POST]
+Create a checkpoint assignment submission
+
++ Attributes
+    + assignment_branch (string, optional) - The GitHub branch for the assignment
+    + assignment_commit_link (string, optional) - The GitHub commit link for the assignment
+    + checkpoint_id (string, required) - The checkpoint id
+    + comment (string, optional) - The assignment submission comment
+    + enrollment_id (string, required) - The student's enrollment id
+
++ Request (application/json)
+
+    + Headers
+
+            authorization: eyJ0eXAiOiJKV1QiLCJhhGciOiJIUzI1NiJ9.eyJhcGlfa2V5IjoiYTc2MDZkNTBhYjA3NDE4ZWE4ZmU5NzliY2YxNTM1ZjAiLCJ1c2VyX2lkIjoyMzAzMTExLCJuYW1lIjoiQmVuIE5lZWx5In0.3VXD-FxOoxaGXHu6vmL8g191bl5F_oKe9qj8Khmp9F0
+
+    + Body
+
+            {
+                "assignment_branch":"assignment-22-iterative-search",
+                "assignment_commit_link":"https":/github.com/me/repo/commit/5",
+                "checkpoint_id":1635,
+                "comment":"this is my work",
+                "enrollment_id":11218,
+            }
+
++ Response 200 (application/json)
+
+            {
+              "id":92985,
+              "student_id":245121,
+              "mentor_id":946,
+              "enrollment_id":11218,
+              "roadmap_ref":"af25ff7b-d789-4926-b4d7-4708a45a10b5|1",
+              "checkpoint_ref":"952b7e4a-33ca-47dd-bdb5-bb16c17f5899|0",
+              "assignment_commit_link":"https://github.com/me/repo/commit/5",
+              "work_commit_link":"https://github.com/me/repo/commit/6",
+              "status":"submitted",
+              "comment":"this is my work",
+              "created_at":"2016-02-04T10:47:32.151-08:00",
+              "updated_at":"2016-02-04T10:47:32.151-08:00",
+              "assignment_branch":"assignment-22-iterative-search"
+            }
+
+### Update [PUT /checkpoint_submissions/:id]
+Update an existing checkpoint assignment submission
+
++ Attributes
+    + id (string, required) - The checkpoint submission id
+    + assignment_branch (string, optional) - The GitHub branch for the assignment
+    + assignment_commit_link (string, optional) - The GitHub commit link for the assignment
+    + checkpoint_id (string, required) - The checkpoint id
+    + comment (string, optional) - The assignment submission comment
+    + enrollment_id (string, required) - The student's enrollment id
+
++ Request (application/json)
+
+    + Headers
+
+            authorization: eyJ0eXAiOiJKV1QiLCJhhGciOiJIUzI1NiJ9.eyJhcGlfa2V5IjoiYTc2MDZkNTBhYjA3NDE4ZWE4ZmU5NzliY2YxNTM1ZjAiLCJ1c2VyX2lkIjoyMzAzMTExLCJuYW1lIjoiQmVuIE5lZWx5In0.3VXD-FxOoxaGXHu6vmL8g191bl5F_oKe9qj8Khmp9F0
+
+    + Body
+
+            {
+                "assignment_branch":"assignment-22-iterative-search",
+                "assignment_commit_link":"https":/github.com/me/repo/commit/5",
+                "checkpoint_id":1635,
+                "comment":"this is my work",
+                "enrollment_id":11218,
+            }
+
++ Response 200 (application/json)
+
+            {
+              "id":92985,
+              "student_id":245121,
+              "mentor_id":946,
+              "enrollment_id":11218,
+              "roadmap_ref":"af25ff7b-d789-4926-b4d7-4708a45a10b5|1",
+              "checkpoint_ref":"952b7e4a-33ca-47dd-bdb5-bb16c17f5899|0",
+              "assignment_commit_link":"https://github.com/me/repo/commit/5",
+              "work_commit_link":"https://github.com/me/repo/commit/6",
+              "status":"submitted",
+              "comment":"this is my work",
+              "created_at":"2016-02-04T10:47:32.151-08:00",
+              "updated_at":"2016-02-04T10:47:32.151-08:00",
+              "assignment_branch":"assignment-22-iterative-search"
+            }
