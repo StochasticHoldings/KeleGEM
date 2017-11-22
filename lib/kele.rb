@@ -23,7 +23,7 @@ class Kele
   end
 
   def get_mentor_availability(mentor_id)
-    get_mentor_availability = self.class.get("/mentors/#{mentor_id}/student_availability",headers: {"authorization" => @auth_token})
+    get_mentor_availability = self.class.get("mentors/#{mentor_id}/student_availability",headers: {"authorization" => @auth_token})
     JSON.parse(get_mentor_availability.body)
   end
 
@@ -36,8 +36,15 @@ class Kele
     JSON.parse(get_messages.body)
   end
 
-  def create_message(sender_id, recipient_id, token, subject, stripped_text)
-    options = {body: {sender: sender_id, recipient_id: recipient_id, token: token, subject: subject, stripped: stripped_text}, headers: {"authorization" => @auth_token}}
+  def create_message(sender_id, recipient_id, stripped_text, subject, token=nil)
+    options = {body: {
+                sender: sender_id,
+                recipient_id: recipient_id,
+                subject: subject,
+                "stripped-text" => stripped_text},
+                headers: {"authorization" => @auth_token}
+              }
+    options[:token] = token if token
     self.class.post(base_url("messages"), options)
   end
 
