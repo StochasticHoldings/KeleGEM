@@ -1,9 +1,9 @@
-#require 'httparty'
+require 'httparty'
 require 'json'
 require './lib/roadmap'
 
 class Kele
-  #include HTTParty
+  include HTTParty
   include Roadmap
 
   def initialize(email, password)
@@ -48,11 +48,22 @@ class Kele
     self.class.post(base_url("messages"), options)
   end
 
+  def create_submission(checkpoint_id, assignment_branch, assignment_commit_link, comment)
+    @enrollment_id = self.get_me['id']
+    response = self.class.post("checkpoint_submissions", headers: { "authorization" => @auth_token },
+      body: {
+        checkpoint_id: checkpoint_id,
+        enrollment_id: @enrollment_id,
+        assignment_branch: assignment_branch,
+        assignment_commit_link: assignment_commit_link,
+        comment: comment
+      })
+    response
+  end
+
   def base_url(endpoint)
     "https://www.bloc.io/api/v1/#{endpoint}"
   end
-
-
 
   #me.create_message({sender_id: 2336726, recipient_id: 2345139, token: @auth_token, subject: 'Sample Subject', striped_text: 'Sample Stripped Text'})
 end
